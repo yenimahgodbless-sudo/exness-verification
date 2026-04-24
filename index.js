@@ -70,7 +70,7 @@ app.post("/verify", async (req, res) => {
 
 });
 
-require("./telegrambot");
+//require("./telegrambot");
 
 const PORT = process.env.PORT || 3000;
 
