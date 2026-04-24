@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ⚠️ MOVE TOKEN TO ENV VARIABLE
+// PUT YOUR EXNESS TOKEN HERE
 const EXNESS_TOKEN = process.env.EXNESS_TOKEN;
 
 app.post("/verify", async (req, res) => {
@@ -25,7 +25,9 @@ app.post("/verify", async (req, res) => {
 
         const response = await axios.post(
             "https://my.exnessaffiliates.com/api/partner/affiliation/",
-            { email },
+            {
+                email: email
+            },
             {
                 headers: {
                     Authorization: `JWT ${EXNESS_TOKEN}`,
@@ -35,17 +37,22 @@ app.post("/verify", async (req, res) => {
         );
 
         const data = response.data;
+        console.log("EXNESS FULL RESPONSE:", JSON.stringify(data, null, 2));
 
+        console.log("EXNESS RESPONSE:", data);
+
+        // Correct field from API
         if (data.affiliation === true) {
 
-            return res.json({
+            res.json({
                 status: "approved",
-                accounts: data.accounts || []
+                accounts: data.accounts,
+                client_uid: data.client_uid
             });
 
         } else {
 
-            return res.json({
+            res.json({
                 status: "not_found"
             });
 
@@ -53,7 +60,9 @@ app.post("/verify", async (req, res) => {
 
     } catch (error) {
 
-        return res.json({
+        console.log("EXNESS ERROR:", error.response?.data || error.message);
+
+        res.json({
             status: "error"
         });
 
@@ -61,11 +70,10 @@ app.post("/verify", async (req, res) => {
 
 });
 
-// REMOVE THIS if not needed (can break deployment)
 // require("./telegrambot");
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Verification server running on port ${PORT}`);
 });
