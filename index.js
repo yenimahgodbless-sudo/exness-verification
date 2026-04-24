@@ -70,10 +70,10 @@ app.post("/verify", async (req, res) => {
 
 });
 
-// require("./telegrambot");
+require("./telegrambot");
 
 const PORT = process.env.PORT || 3000;
-require("./telegrambot");
+
 app.listen(PORT, () => {
     console.log(`Verification server running on port ${PORT}`);
 });
